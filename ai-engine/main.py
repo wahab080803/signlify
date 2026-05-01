@@ -8,6 +8,9 @@ import pickle
 import base64
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+import string
+letters = list(string.ascii_uppercase)
+labels_dict = {i: letter for i, letter in enumerate(letters)}
 
 # --- 1. Model Definitions (From your provided code) ---
 
@@ -90,12 +93,16 @@ async def websocket_predict(websocket: WebSocket, mode: str):
     sequence = []
     stability_buffer = []  # <--- Added
     STABILITY_THRESHOLD = 5 # <--- Added
+    last_predicted_word = None
     
     try:
         while True:
             # Receive image frame from React (Base64 string)
             data = await websocket.receive_text()
-            header, encoded = data.split(",", 1)
+            if "," in data:
+                header, encoded = data.split(",", 1)
+            else:
+                encoded = data # Use the whole string if no header is present
             nparr = np.frombuffer(base64.b64decode(encoded), np.uint8)
             frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
@@ -107,33 +114,83 @@ async def websocket_predict(websocket: WebSocket, mode: str):
             if mode == "word":
                 keypoints = extract_landmarks(results)
                 sequence.append(keypoints)
-                sequence = sequence[-60:] # 60 frame buffer[cite: 1]
+                sequence = sequence[-60:]
                 
-                if len(sequence) == 60 and (results.left_hand_landmarks or results.right_hand_landmarks):
+                hands_visible = results.left_hand_landmarks or results.right_hand_landmarks
+
+                if len(sequence) == 60 and hands_visible:
                     input_data = torch.tensor(np.array(sequence), dtype=torch.float32).unsqueeze(0).to(device)
                     with torch.no_grad():
                         res = word_model(input_data)
                         prob = torch.softmax(res, dim=1)
-                        confidence, idx = torch.max(prob, dim=1)
-                        if confidence.item() > 0.8: # Confidence threshold[cite: 1]
-                            prediction = word_label_map[idx.item()]
-            
+                        
+                        # Requirement 4: Top-K Confidence Gap Logic
+                        top_probs, top_idxs = torch.topk(prob, 2, dim=1)
+                        confidence = top_probs[0][0].item()
+                        second_confidence = top_probs[0][1].item()
+                        idx = top_idxs[0][0].item()
+
+                        if confidence > 0.8 and (confidence - second_confidence) > 0.20:
+                            predicted_word = word_label_map[idx]
+                            stability_buffer.append(predicted_word)
+                            stability_buffer = stability_buffer[-STABILITY_THRESHOLD:]
+                            
+                            # Stability Check
+                            if stability_buffer.count(predicted_word) == STABILITY_THRESHOLD:
+                                if predicted_word != last_predicted_word:
+                                    prediction = predicted_word
+                                    last_predicted_word = predicted_word
+                        else:
+                            stability_buffer = []
+                else:
+                    stability_buffer = []
+
             elif mode == "character":
-                if results.right_hand_landmarks: # Focus on one hand for character[cite: 2]
-                    landmarks = results.right_hand_landmarks.landmark
-                    x_ = [lm.x for lm in landmarks]
-                    y_ = [lm.y for lm in landmarks]
+                # Check both hands to be safe
+                hand_landmarks = results.right_hand_landmarks or results.left_hand_landmarks
+                
+                if hand_landmarks:
+                    x_, y_ = [], []
+                    for lm in hand_landmarks.landmark:
+                        x_.append(lm.x)
+                        y_.append(lm.y)
+
                     data_aux = []
-                    for lm in landmarks:
+                    for lm in hand_landmarks.landmark:
+                        # Your exact normalization logic from the record
                         data_aux.append(lm.x - min(x_))
                         data_aux.append(lm.y - min(y_))
+
+                    # Ensure it matches the 42 features your pickle model expects
+                    while len(data_aux) < 42:
+                        data_aux.append(0)
                     
-                    pred = char_model.predict([np.asarray(data_aux)])
-                    prediction = char_labels[int(pred[0])] # Prediction index[cite: 2]
+                    if len(data_aux) == 42:
+                        # Predict using your loaded char_model
+                        pred = char_model.predict([np.asarray(data_aux)])
+                        char_code = pred[0]
+
+                        # Mapping logic from your record script
+                        try:
+                            if isinstance(char_code, (int, np.integer)):
+                                prediction = labels_dict.get(char_code, str(char_code))
+                            else:
+                                prediction = str(char_code)
+                        except Exception:
+                            prediction = str(char_code)
+                            
+                    print(f"Character Predicted: {prediction}") # Debugging
+                else:
+                    prediction = "" # Send empty if no hand is visible
 
             await websocket.send_json({"prediction": prediction})
 
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error in prediction loop: {e}")
     finally:
-        await websocket.close()
+        # Wrap the close in a try/except to avoid the "ASGI message" crash
+        try:
+            await websocket.close()
+        except:
+            pass 
+        print("WebSocket connection closed safely.")
