@@ -42,18 +42,27 @@ const PredictionPage = () => {
   }, [mode]);
 
   const capture = useCallback(() => {
-        if (
-        webcamRef.current && 
-        ws.current && 
-        ws.current.readyState === WebSocket.OPEN
-        ) {
-        const imageSrc = webcamRef.current.getScreenshot();
+    // 1. Check if the webcam and websocket are ready
+    if (
+      webcamRef.current && 
+      ws.current && 
+      ws.current.readyState === WebSocket.OPEN
+    ) {
+      // 2. Capture the current frame
+      const imageSrc = webcamRef.current.getScreenshot();
+
+      // 3. CRITICAL FIX: Only send if the image is NOT null or empty
+      // This prevents the OpenCV "!_src.empty()" error on your backend
+      if (imageSrc && imageSrc !== null) {
         ws.current.send(imageSrc);
-        } 
-        else if (ws.current && ws.current.readyState === WebSocket.CONNECTING) {
-        console.log("Waiting for WebSocket to open...");
-        }
-    }, [webcamRef]);
+      } else {
+        console.warn("Skipping empty frame...");
+      }
+    } 
+    else if (ws.current && ws.current.readyState === WebSocket.CONNECTING) {
+      console.log("Waiting for WebSocket to open...");
+    }
+  }, [webcamRef]);
 
   React.useEffect(() => {
     connectWebSocket();

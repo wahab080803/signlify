@@ -1,12 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Footer from '../components/Footer'; // Adjust path as needed
+import wahabPic from '../assets/wahab.jpeg'; 
+import irtazaPic from '../assets/irtaza.jpeg';
 
 const HomePage = () => {
   const lightBlue = "#61dafb";
 
   return (
-    <div className="App-header" style={{ justifyContent: 'flex-start', overflowY: 'auto', height: '100vh', scrollBehavior: 'smooth' }}>
-      
+    <div className="App-header" style={{ 
+      justifyContent: 'flex-start', 
+      minHeight: '100vh', // Changed from height to minHeight
+      scrollBehavior: 'smooth',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      width: '100%',
+      overflowX: 'hidden' // Prevents horizontal scrollbars
+    }}>
       {/* 1. Hero Section */}
       <section style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
         <h1 style={{ fontSize: '3.5rem', marginBottom: '10px' }}>
@@ -47,32 +58,87 @@ const HomePage = () => {
 
       {/* 3. Authors Section (Replacing Footer) */}
       <section style={infoSectionStyle}>
-        <h2 style={{ color: lightBlue }}>Project Authors</h2>
-        <div style={{ display: 'flex', gap: '50px', marginTop: '20px', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={avatarPlaceholder}>Author 1</div>
-            <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Abdul Wahab</p>
-            <p>FAST NUCES Lahore</p>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={avatarPlaceholder}>Author 2</div>
-            <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Irtaza Sameel</p>
-            <p>FAST NUCES Lahore</p>
-          </div>
+      <h2 style={{ color: lightBlue }}>Project Authors</h2>
+      <div style={{ display: 'flex', gap: '50px', marginTop: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        
+        {/* Author 1: Wahab */}
+        <div style={{ textAlign: 'center' }}>
+          <img 
+            src={wahabPic} 
+            alt="Abdul Wahab" 
+            style={authorImageStyle} 
+          />
+          <p style={{ fontSize: '1.2rem', fontWeight: 'bold', marginTop: '10px' }}>Abdul Wahab</p>
+          <p style={{ color: '#ccc' }}>FAST NUCES Lahore</p>
         </div>
-      </section>
+
+        {/* Author 2: Irtaza */}
+        <div style={{ textAlign: 'center' }}>
+          <img 
+            src={irtazaPic} 
+            alt="Irtaza Sameel" 
+            style={authorImageStyle} 
+          />
+          <p style={{ fontSize: '1.2rem', fontWeight: 'bold', marginTop: '10px' }}>Irtaza Sameel</p>
+          <p style={{ color: '#ccc' }}>FAST NUCES Lahore</p>
+        </div>
+
+  </div>
+</section>
 
       {/* 4. Location & Contact Section */}
-      <section style={{ ...infoSectionStyle, backgroundColor: '#1c1e22', borderTop: '1px solid #444', width: '100%' }}>
-        <h2 style={{ color: lightBlue }}>Visit Us</h2>
-        <p style={{ fontSize: '1.1rem' }}><b>FAST NUCES</b> - National University of Computer and Emerging Sciences</p>
-        <p>B-Block, Faisal Town, Lahore, Punjab</p>
-        <div style={{ marginTop: '20px', fontSize: '1rem', color: '#bbb' }}>
-          <p>📞 Contact: +92 42 111 128 128</p>
-          <p>📧 Support: support.signlify@fast.edu.pk</p>
+      {/* Set width to 100% and ensure display is flex-column to stack title and content */}
+      <section style={{ 
+        padding: '80px 20px',
+        textAlign: 'center',
+        backgroundColor: '#1c1e22', 
+        borderTop: '1px solid #444', 
+        width: '100%', // Ensures the background color spans the full width
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center' 
+      }}>
+        <h2 style={{ color: lightBlue, marginBottom: '40px' }}>Visit Us</h2>
+    
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          flexWrap: 'wrap', 
+          gap: '40px', 
+          width: '100%', 
+          maxWidth: '1100px' 
+        }}>
+          
+          {/* Map Container */}
+          <div style={{ borderRadius: '15px', overflow: 'hidden', border: `2px solid ${lightBlue}`, boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+            <iframe 
+              title="FAST NUCES Lahore Map"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3403.011894451036!2d74.30154087541604!3d31.468875374237517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391901625902f901%3A0xe5435e16543ed24d!2sFAST%20NUCES%20Lahore!5e0!3m2!1sen!2spk!4v1715000000000!5m2!1sen!2spk" 
+              width="450" 
+              height="300" 
+              style={{ border: 0, display: 'block' }} 
+              allowFullScreen="" 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
+
+          {/* Contact Details */}
+          <div style={{ textAlign: 'left', maxWidth: '400px' }}>
+            <p style={{ fontSize: '1.2rem', marginBottom: '10px', color: 'white' }}>
+              <b>FAST NUCES</b> - National University of Computer and Emerging Sciences
+            </p>
+            <p style={{ marginBottom: '20px', color: '#ccc' }}>B-Block, Faisal Town, Lahore, Punjab</p>
+            <div style={{ fontSize: '1rem', color: '#bbb', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <p>📞 <b>Contact:</b> +92 42 111 128 128</p>
+              <p>📧 <b>Support:</b> support.signlify@fast.edu.pk</p>
+            </div>
+          </div>
+          
         </div>
       </section>
-
+      <Footer />
     </div>
   );
 };
@@ -118,6 +184,16 @@ const avatarPlaceholder = {
   color: '#aaa',
   fontSize: '0.9rem',
   border: '3px solid #61dafb'
+};
+
+const authorImageStyle = {
+  width: '150px',
+  height: '150px',
+  borderRadius: '50%',
+  objectFit: 'cover', // Ensures the photo doesn't look stretched
+  border: `3px solid #61dafb`, // SignLify Light Blue border
+  boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
+  transition: 'transform 0.3s ease'
 };
 
 export default HomePage;

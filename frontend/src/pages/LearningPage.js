@@ -1,76 +1,140 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
+const alphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 const LearningPage = () => {
-  const location = useLocation();
-  
-  // Requirement: Display username passed from Login/Dashboard
-  const userName = location.state?.username || "User";
+  const lightBlue = "#61dafb";
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
+
+  // 1. Logic for Scroll-to-Top Button Visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 400) {
+        setShowScrollBtn(true);
+      } else {
+        setShowScrollBtn(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // 2. Filter alphabet based on search
+  const filteredAlphabet = alphabetList.filter(letter => 
+    letter.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="App-header" style={{ position: 'relative', justifyContent: 'flex-start', paddingTop: '40px' }}>
+    <div className="App-header" style={{ justifyContent: 'flex-start', minHeight: '100vh', paddingBottom: '100px' }}>
       
-      {/* Back Arrow SVG - Navigates back to Dashboard[cite: 1] */}
-      <Link 
-        to="/dashboard" 
-        state={{ username: userName }} // Passing name back to keep dashboard personalized[cite: 1]
-        style={{ position: 'absolute', top: '20px', left: '20px', transition: 'transform 0.2s' }}
-      >
-        <svg 
-          width="40" 
-          height="40" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="#61dafb" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-          style={{ cursor: 'pointer' }}
-          onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
-          onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
-        >
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
+      {/* Back Button */}
+      <Link to="/dashboard" style={{ alignSelf: 'flex-start', marginLeft: '5%', color: lightBlue, textDecoration: 'none', marginTop: '30px' }}>
+        ← Back to Dashboard
       </Link>
 
-      <h2 style={{ marginBottom: '10px' }}>ASL Learning Center</h2>
-
-      {/* Placeholder for Partner's Content */}
-      <div style={contentBoxStyle}>
-        <h3 style={{ color: '#61dafb' }}>Master the Alphabet</h3>
-        <p>
-          Welcome to the learning module. Here, you will find interactive lessons 
-          designed to help you master American Sign Language (ASL).
-        </p>
-        <div style={partnerNoticeStyle}>
-          Partner: Add your learning components, video feeds, or sign guides here.
-        </div>
+      <h1 style={{ color: lightBlue, fontSize: '3rem', marginBottom: '10px' }}>Learning Mode</h1>
+      
+      {/* Search Bar Section */}
+      <div style={{ marginBottom: '40px', width: '90%', maxWidth: '500px' }}>
+        <input 
+          type="text" 
+          placeholder="Search for a character (e.g. 'A')..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={searchBarStyle}
+        />
       </div>
+
+      {/* Dynamic Sections */}
+      <div style={{ width: '100%' }}>
+        {filteredAlphabet.length > 0 ? (
+          filteredAlphabet.map((letter, index) => {
+            const isEven = index % 2 === 0;
+            const imagePath = require(`../assets/test1/${letter}_test.jpg`);
+
+            return (
+              <section key={letter} style={{ 
+                display: 'flex', 
+                flexDirection: isEven ? 'row' : 'row-reverse', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                padding: '80px 10%',
+                backgroundColor: isEven ? 'transparent' : '#1c1e22',
+                gap: '60px',
+                flexWrap: 'wrap'
+              }}>
+                <div style={{ flex: 1, textAlign: isEven ? 'right' : 'left', minWidth: '300px' }}>
+                  <h2 style={{ fontSize: '6rem', color: lightBlue, margin: 0 }}>{letter}</h2>
+                  <p style={{ fontSize: '1.5rem', color: '#ccc' }}>Sign for <b>{letter}</b></p>
+                </div>
+
+                <div style={{ flex: 1, display: 'flex', justifyContent: isEven ? 'flex-start' : 'flex-end', minWidth: '300px' }}>
+                  <div style={imageContainerStyle}>
+                    <img src={imagePath} alt={`ASL ${letter}`} style={{ width: '250px', borderRadius: '10px' }} />
+                  </div>
+                </div>
+              </section>
+            );
+          })
+        ) : (
+          <p style={{ marginTop: '50px', color: '#666' }}>No characters match your search.</p>
+        )}
+      </div>
+
+      {/* 3. Back to Top Button */}
+      {showScrollBtn && (
+        <button onClick={scrollToTop} style={scrollTopBtnStyle}>
+          ↑
+        </button>
+      )}
     </div>
   );
 };
 
-// --- Styles ---
-
-const contentBoxStyle = {
+// --- New Styles ---
+const searchBarStyle = {
+  width: '100%',
+  padding: '15px 20px',
+  borderRadius: '30px',
+  border: '2px solid #444',
   background: '#1c1e22',
-  padding: '40px',
-  borderRadius: '15px',
-  border: '1px solid #444',
-  maxWidth: '800px',
-  width: '90%',
+  color: 'white',
+  fontSize: '1.1rem',
+  outline: 'none',
   textAlign: 'center',
-  boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
+  boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+  transition: 'border-color 0.3s'
 };
 
-const partnerNoticeStyle = {
-  marginTop: '30px',
-  padding: '20px',
-  border: '1px dashed #61dafb',
-  color: '#61dafb',
-  borderRadius: '8px',
-  fontSize: '0.9rem'
+const scrollTopBtnStyle = {
+  position: 'fixed',
+  bottom: '40px',
+  right: '40px',
+  width: '50px',
+  height: '50px',
+  borderRadius: '50%',
+  backgroundColor: '#61dafb',
+  color: '#282c34',
+  border: 'none',
+  fontSize: '1.5rem',
+  fontWeight: 'bold',
+  cursor: 'pointer',
+  boxShadow: '0 5px 15px rgba(0,0,0,0.4)',
+  zIndex: 1000
+};
+
+const imageContainerStyle = {
+  padding: '15px', 
+  background: '#282c34', 
+  borderRadius: '20px', 
+  border: '2px solid #61dafb',
+  boxShadow: '0 15px 40px rgba(0,0,0,0.5)'
 };
 
 export default LearningPage;
