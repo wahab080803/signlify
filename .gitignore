@@ -26,3 +26,5 @@ yarn-error.log*
 # System
 .DS_Store
 Thumbs.db
+
+frontend/src/assets/Videos-Large

@@ -11,7 +11,6 @@ const DashboardLayout = ({ children, username }) => {
     { name: 'Learning Mode', path: '/learning', icon: '📖' },
     { name: 'Prediction', path: '/prediction', icon: '🎥' },
     { name: 'ASL Guide', path: '/guide-on-asl', icon: '📄' },
-    { name: 'Support', path: '/support', icon: '❓' },
   ];
 
   return (

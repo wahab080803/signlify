@@ -17,7 +17,7 @@ const PredictionPage = () => {
 
   const connectWebSocket = useCallback(() => {
     if (ws.current) ws.current.close();
-    ws.current = new WebSocket(`wss://blazer-surgical-brought.ngrok-free.dev/ws/predict/${mode}`);
+    ws.current = new WebSocket(`ws://localhost:8000/ws/predict/${mode}`);
 
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);

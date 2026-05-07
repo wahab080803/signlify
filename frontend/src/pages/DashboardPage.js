@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
@@ -6,22 +6,50 @@ const DashboardPage = () => {
   const { user } = useSelector((state) => state.auth);
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Create a local state for the username
+  const [userName, setUserName] = useState('User');
 
-  // 1. Get username from navigation state (passed from Login) or fallback to Redux/User
-  const userName = location.state?.username || user?.name || 'User';
+  useEffect(() => {
+    // 1. Check if name is in location state (from login)
+    const nameFromLogin = location.state?.username;
+    
+    // 2. Check if name is in Redux
+    const nameFromRedux = user?.name;
 
-  // 2. Handle Logout to return to Homepage
+    // 3. Check if we saved it in localStorage previously
+    const savedName = localStorage.getItem('signlify_user');
+
+    if (nameFromLogin) {
+      setUserName(nameFromLogin);
+      localStorage.setItem('signlify_user', nameFromLogin); // Save it!
+    } else if (nameFromRedux) {
+      setUserName(nameFromRedux);
+    } else if (savedName) {
+      setUserName(savedName);
+    }
+  }, [location.state, user]);
+
   const handleLogout = () => {
+    localStorage.removeItem('signlify_user'); // Clear on logout
     navigate('/');
   };
 
   return (
     <div className="App-header" style={{ position: 'relative', justifyContent: 'flex-start', paddingTop: '60px' }}>
       
-      {/* Logout Button at Top Right */}
+      {/* Logout Button */}
       <button 
         onClick={handleLogout} 
         style={logoutButtonStyle}
+        onMouseOver={(e) => {
+            e.currentTarget.style.background = '#ff4b2b';
+            e.currentTarget.style.color = 'white';
+        }}
+        onMouseOut={(e) => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = '#ff4b2b';
+        }}
       >
         Logout
       </button>
@@ -66,7 +94,7 @@ const DashboardPage = () => {
   );
 };
 
-// Logout button style
+// ... (Keep your existing styles below)
 const logoutButtonStyle = {
   position: 'absolute',
   top: '20px',
@@ -81,7 +109,6 @@ const logoutButtonStyle = {
   transition: '0.3s'
 };
 
-// Card style object
 const cardStyle = {
   backgroundColor: '#1c1e22',
   border: '1px solid #444',

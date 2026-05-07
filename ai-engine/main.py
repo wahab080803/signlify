@@ -49,13 +49,7 @@ class SignTransformer(nn.Module):
 # --- 2. Initialization & Loading ---
 
 app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allows your Vercel frontend to connect
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

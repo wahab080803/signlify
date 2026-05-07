@@ -30,9 +30,10 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/authors" element={<AuthorsPage />} />
+            {/* Moved SupportPage here to keep it completely independent */}
+            <Route path="/support" element={<SupportPage />} /> 
 
             {/* Protected/App Routes (With Sidebar & Navbar) */}
-            {/* We wrap these in DashboardLayout to meet your professor's requirement */}
             <Route 
               path="/dashboard" 
               element={
@@ -62,14 +63,6 @@ function App() {
               element={
                 <DashboardLayout>
                   <ASLGuidePage />
-                </DashboardLayout>
-              } 
-            />
-            <Route 
-              path="/support" 
-              element={
-                <DashboardLayout>
-                  <SupportPage />
                 </DashboardLayout>
               } 
             />

@@ -1,6 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+// 1. Import your video files
+import studentVideo from '../assets/Videos/student.mp4';
+import teacherVideo from '../assets/Videos/teacher.mp4';
+import whatVideo from '../assets/Videos/what.mp4';
+
 const ASLGuidePage = () => {
   const lightBlue = "#61dafb";
 
@@ -9,6 +14,13 @@ const ASLGuidePage = () => {
     { title: "Facial Expressions", desc: "In ASL, your face is your 'tone of voice.' It conveys emotion and intent.", icon: "😊" },
     { title: "Hand Orientation", desc: "The direction your palm faces can completely change a word's meaning.", icon: "✋" },
     { title: "Movement", desc: "Motion is key for word-level signs like 'Happy' or 'Working'.", icon: "🔄" }
+  ];
+
+  // 2. Data array for the video section
+  const videoSigns = [
+    { title: "Student", src: studentVideo },
+    { title: "Teacher", src: teacherVideo },
+    { title: "What", src: whatVideo }
   ];
 
   return (
@@ -33,24 +45,26 @@ const ASLGuidePage = () => {
         ))}
       </div>
 
-      {/* Animation Section Placeholder */}
+      {/* 3. Updated Video Section */}
       <section style={animationSectionStyle}>
-        <h2 style={{ color: 'white' }}>Common Signs in Motion</h2>
+        <h2 style={{ color: 'white', marginBottom: '30px' }}>Common Signs in Motion</h2>
         <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <div style={animationPlaceholder}>
-             {/* Replace with <img src={helloGif} /> later */}
-             <p>Hello.gif</p>
-          </div>
-          <div style={animationPlaceholder}>
-             <p>ThankYou.gif</p>
-          </div>
-          <div style={animationPlaceholder}>
-             <p>Help.gif</p>
-          </div>
+          {videoSigns.map((sign, index) => (
+            <div key={index} style={videoContainerStyle}>
+              <video 
+                src={sign.src} 
+                autoPlay 
+                loop 
+                muted 
+                playsInline 
+                style={videoElementStyle}
+              />
+              <p style={{ color: lightBlue, marginTop: '10px', fontWeight: 'bold' }}>"{sign.title}"</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* CSS for hover effect (you can add this to your index.css) */}
       <style>
         {`
           .guide-card:hover {
@@ -93,16 +107,21 @@ const animationSectionStyle = {
   textAlign: 'center'
 };
 
-const animationPlaceholder = {
-  width: '250px',
-  height: '250px',
-  background: '#282c34',
-  borderRadius: '15px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  border: '2px dashed #444',
-  color: '#666'
+// Container for the video and its label
+const videoContainerStyle = {
+  background: '#1c1e22',
+  padding: '15px',
+  borderRadius: '20px',
+  border: '1px solid #333',
+  width: '280px'
+};
+
+// The actual video styling
+const videoElementStyle = {
+  width: '100%',
+  height: 'auto',
+  borderRadius: '10px',
+  boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
 };
 
 export default ASLGuidePage;

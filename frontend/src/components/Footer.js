@@ -28,7 +28,6 @@ const Footer = () => {
         {/* Resources - Public facing pages */}
         <div style={linkColumnStyle}>
           <h4 style={{ color: 'white', marginBottom: '15px' }}>Resources</h4>
-          <Link to="/guide-on-asl" style={footerLinkStyle}>Guide on ASL</Link>
           <Link to="/blog" style={footerLinkStyle}>Research Blog</Link>
           <Link to="/support" style={footerLinkStyle}>Support Center</Link>
         </div>
