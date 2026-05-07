@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom'; // Added missing imports[cite: 1]
+import { Link, useLocation } from 'react-router-dom'; // Added missing imports[cite: 1]
 import Webcam from 'react-webcam';
 
 const PredictionPage = () => {
@@ -8,8 +8,11 @@ const PredictionPage = () => {
   const webcamRef = useRef(null);
   const ws = useRef(null);
   
+  // Navigation hooks[cite: 1]
+  const currentLocation = useLocation();
+  
   // Requirement: Display username passed from Login/Dashboard[cite: 1]
-  const userName = location.state?.username || "User";
+  const userName = currentLocation.state?.username || "User";
 
   const connectWebSocket = useCallback(() => {
     if (ws.current) ws.current.close();
