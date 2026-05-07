@@ -172,20 +172,6 @@ const cardStyle = {
   border: '1px solid #444'
 };
 
-const avatarPlaceholder = {
-  width: '120px',
-  height: '120px',
-  borderRadius: '50%',
-  background: '#444',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  margin: '0 auto 15px auto',
-  color: '#aaa',
-  fontSize: '0.9rem',
-  border: '3px solid #61dafb'
-};
-
 const authorImageStyle = {
   width: '150px',
   height: '150px',

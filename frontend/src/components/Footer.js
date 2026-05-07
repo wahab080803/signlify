@@ -51,7 +51,6 @@ const Footer = () => {
 // --- Styles ---
 const footerWrapperStyle = { backgroundColor: '#1c1e22', borderTop: '1px solid #444', width: '100%', padding: '50px 0 20px 0', display: 'flex', flexDirection: 'column', alignItems: 'center' };
 const footerTopStyle = { display: 'flex', justifyContent: 'space-between', width: '85%', maxWidth: '1100px', flexWrap: 'wrap', gap: '40px' };
-const mapContainerStyle = { flex: 0.8, minWidth: '280px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #444' };
 const footerLinksRowStyle = { display: 'flex', justifyContent: 'space-between', width: '85%', maxWidth: '1100px', marginTop: '40px', borderTop: '1px solid #333', paddingTop: '30px', flexWrap: 'wrap', gap: '30px' };
 const linkColumnStyle = { display: 'flex', flexDirection: 'column', textAlign: 'left', minWidth: '150px' };
 const footerLinkStyle = { color: '#bbb', textDecoration: 'none', fontSize: '0.9rem', marginBottom: '10px', transition: 'color 0.3s' };

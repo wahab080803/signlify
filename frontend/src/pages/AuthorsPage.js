@@ -42,7 +42,7 @@ const AuthorsPage = () => {
             led the development of the Learning Mode and the React-based Dashboard.
           </p>
           <div style={socialLinksStyle}>
-             <a href="#" style={iconLink}>LinkedIn</a>
+             <a href="https://www.linkedin.com/in/abdul-wahab-butt-84bb3a27a/" style={iconLink}>LinkedIn</a>
           </div>
         </div>
 
