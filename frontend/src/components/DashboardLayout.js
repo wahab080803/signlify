@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
-const DashboardLayout = ({ children, username }) => {
+const DashboardLayout = ({ children, username: propUsername }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const lightBlue = "#61dafb";
+
+  // State to hold the dynamic username
+  const [currentUsername, setCurrentUsername] = useState('User');
+
+  useEffect(() => {
+    // 1. Priority: Use the prop if passed directly
+    // 2. Secondary: Check localStorage for the saved session name
+    const savedName = localStorage.getItem('signlify_user');
+
+    if (propUsername) {
+      setCurrentUsername(propUsername);
+      localStorage.setItem('signlify_user', propUsername);
+    } else if (savedName) {
+      setCurrentUsername(savedName);
+    }
+  }, [propUsername]);
 
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: '🏠' },
@@ -12,6 +28,14 @@ const DashboardLayout = ({ children, username }) => {
     { name: 'Prediction', path: '/prediction', icon: '🎥' },
     { name: 'ASL Guide', path: '/guide-on-asl', icon: '📄' },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem('signlify_user');
+    navigate('/login');
+  };
+
+  // Get the first letter for the avatar (S for Sheer, W for Wahab)
+  const avatarLetter = currentUsername.charAt(0).toUpperCase();
 
   return (
     <div style={{ display: 'flex', height: '100vh', backgroundColor: '#282c34', color: 'white', overflow: 'hidden' }}>
@@ -39,7 +63,7 @@ const DashboardLayout = ({ children, username }) => {
           ))}
         </nav>
 
-        <button onClick={() => navigate('/login')} style={logoutButtonStyle}>
+        <button onClick={handleLogout} style={logoutButtonStyle}>
           Logout 🚪
         </button>
       </aside>
@@ -48,11 +72,11 @@ const DashboardLayout = ({ children, username }) => {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <header style={navbarStyle}>
           <div style={{ fontWeight: 'bold' }}>
-            {location.pathname.replace('/', '').toUpperCase() || 'HOME'}
+            {location.pathname.replace('/', '').toUpperCase().replace('-', ' ') || 'HOME'}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <span>Welcome, <b style={{ color: lightBlue }}>{username || 'Wahab'}</b></span>
-            <div style={smallAvatarStyle}>{username ? username[0].toUpperCase() : 'W'}</div>
+            <span>Welcome, <b style={{ color: lightBlue }}>{currentUsername}</b></span>
+            <div style={smallAvatarStyle}>{avatarLetter}</div>
           </div>
         </header>
 
@@ -64,6 +88,7 @@ const DashboardLayout = ({ children, username }) => {
   );
 };
 
+// --- Styles (kept exactly as you provided) ---
 const sidebarStyle = { width: '260px', backgroundColor: '#1c1e22', display: 'flex', flexDirection: 'column', borderRight: '1px solid #444' };
 const navLinkStyle = { display: 'block', padding: '15px 25px', color: 'white', textDecoration: 'none', fontSize: '1rem', transition: '0.3s' };
 const navbarStyle = { height: '70px', backgroundColor: '#1c1e22', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 30px', borderBottom: '1px solid #444' };
